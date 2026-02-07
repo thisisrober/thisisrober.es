@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import { FaEnvelope, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -11,6 +11,8 @@ export default function UnsubscribePage() {
   const [email, setEmail] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => { document.title = 'thisisrober - Blog'; }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

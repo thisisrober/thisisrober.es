@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   FaChartPie, FaFileAlt, FaPlusCircle, FaFolderOpen,
   FaProjectDiagram, FaBriefcase, FaCertificate, FaUsers,
-  FaRobot, FaCog, FaSignOutAlt, FaExternalLinkAlt, FaBars
+  FaRobot, FaCog, FaSignOutAlt, FaExternalLinkAlt, FaBars, FaBox
 } from 'react-icons/fa';
 import { useState } from 'react';
 
@@ -20,6 +20,9 @@ const NAV_SECTIONS = [
   { to: '/dashboard/projects', label: 'Proyectos', icon: <FaProjectDiagram /> },
   { to: '/dashboard/experience', label: 'Experiencia', icon: <FaBriefcase /> },
   { to: '/dashboard/certifications', label: 'Certificaciones', icon: <FaCertificate /> },
+
+  { heading: 'DevOps' },
+  { to: '/dashboard/provisioning', label: 'Provisioning Stack', icon: <FaBox /> },
 
   { heading: 'Otros' },
   { to: '/dashboard/subscribers', label: 'Suscriptores', icon: <FaUsers /> },

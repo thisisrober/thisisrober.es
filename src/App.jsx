@@ -7,6 +7,7 @@ import BlogHome from './pages/blog/BlogHome';
 import BlogPost from './pages/blog/BlogPost';
 import BlogCategory from './pages/blog/BlogCategory';
 import UnsubscribePage from './pages/blog/UnsubscribePage';
+import { Component } from 'react';
 
 // Dashboard
 import DashLoginPage from './pages/dashboard/LoginPage';
@@ -21,6 +22,7 @@ import DashExperiencePage from './pages/dashboard/ExperiencePage';
 import DashCertificationsPage from './pages/dashboard/CertificationsPage';
 import DashSettingsPage from './pages/dashboard/SettingsPage';
 import DashPromptsPage from './pages/dashboard/PromptsPage';
+import DashProvisioningPage from './pages/dashboard/ProvisioningPage';
 
 const pageVariants = {
   initial: { opacity: 0, y: 12 },
@@ -47,13 +49,38 @@ function RequireAuth({ children }) {
   return children;
 }
 
+/* Error boundary to catch crashes in dashboard pages
+   without blacking out the whole app */
+class DashboardErrorBoundary extends Component {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(err, info) { console.error('Dashboard error:', err, info); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ background: '#0a0b10', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem', color: '#e4e4e7', fontFamily: 'Figtree, sans-serif' }}>
+          <h2>Algo salió mal</h2>
+          <p style={{ color: '#71717a' }}>Ha ocurrido un error inesperado en esta página.</p>
+          <button
+            onClick={() => { window.location.href = '/dashboard'; }}
+            style={{ background: 'none', border: 'none', color: '#818cf8', textDecoration: 'underline', cursor: 'pointer', fontSize: '1rem', fontFamily: 'inherit' }}
+          >
+            Volver al panel
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function App() {
   const location = useLocation();
   const isDashboard = location.pathname.startsWith('/dashboard');
 
   if (isDashboard) {
     return (
-      <>
+      <DashboardErrorBoundary>
         <ScrollToTop />
         <Routes>
           <Route path="/dashboard/login" element={<DashLoginPage />} />
@@ -68,8 +95,9 @@ export default function App() {
           <Route path="/dashboard/certifications" element={<RequireAuth><DashCertificationsPage /></RequireAuth>} />
           <Route path="/dashboard/settings" element={<RequireAuth><DashSettingsPage /></RequireAuth>} />
           <Route path="/dashboard/prompts" element={<RequireAuth><DashPromptsPage /></RequireAuth>} />
+          <Route path="/dashboard/provisioning" element={<RequireAuth><DashProvisioningPage /></RequireAuth>} />
         </Routes>
-      </>
+      </DashboardErrorBoundary>
     );
   }
 

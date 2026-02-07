@@ -841,6 +841,7 @@ a.contact-info-value:hover { color: var(--accent); }
   }
   .project-card { animation: none !important; }
   .timeline-item { padding-left: 1rem; }
+  .show-more-btn { margin-top: 1.75rem; }
 
   /* Contact glow smaller on mobile */
   .contact-glow-1 { width: 300px; height: 300px; }

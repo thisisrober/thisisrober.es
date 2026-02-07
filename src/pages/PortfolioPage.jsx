@@ -12,6 +12,8 @@ import { FaArrowUp } from 'react-icons/fa';
 export default function PortfolioPage() {
   const [showScroll, setShowScroll] = useState(false);
 
+  useEffect(() => { document.title = 'thisisrober - Portfolio'; }, []);
+
   useEffect(() => {
     const onScroll = () => setShowScroll(window.scrollY > 300);
     window.addEventListener('scroll', onScroll);

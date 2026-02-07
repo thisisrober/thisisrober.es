@@ -9,6 +9,7 @@ import portfolioRoutes from './routes/portfolio.js';
 import blogRoutes from './routes/blog.js';
 import adminRoutes from './routes/admin.js';
 import contactRoutes from './routes/contact.js';
+import provisioningRoutes from './routes/provisioning.js';
 
 // Load .env file in production (lightweight, no extra dependency)
 const __filename = fileURLToPath(import.meta.url);
@@ -67,6 +68,7 @@ app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/admin/provisioning', provisioningRoutes);
 
 // In production, serve Vite build
 if (process.env.NODE_ENV === 'production') {

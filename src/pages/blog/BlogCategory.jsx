@@ -14,6 +14,8 @@ export default function BlogCategory() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => { document.title = 'thisisrober - Blog'; }, []);
+
   useEffect(() => {
     setLoading(true);
     Promise.all([

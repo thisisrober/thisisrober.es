@@ -18,6 +18,8 @@ export default function DashProjectsPage() {
   const [image, setImage] = useState(null);
   const [error, setError] = useState('');
 
+  useEffect(() => { document.title = 'Dashboard | Proyectos'; }, []);
+
   const load = () => {
     api.get('/admin/projects').then(r => { setProjects(r.data); setLoading(false); });
   };

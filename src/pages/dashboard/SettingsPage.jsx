@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { FaSave, FaGlobe, FaEnvelope, FaMapMarkerAlt, FaImage, FaFilePdf, FaUpload, FaLink, FaPlus, FaTrash, FaChevronDown, FaUser, FaCode, FaInfoCircle } from 'react-icons/fa';
+import { FaSave, FaGlobe, FaEnvelope, FaMapMarkerAlt, FaImage, FaFilePdf, FaUpload, FaLink, FaPlus, FaTrash, FaChevronDown, FaUser, FaCode, FaInfoCircle, FaKey, FaCheck, FaEyeSlash, FaEye } from 'react-icons/fa';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import api from '../../services/api';
 
@@ -139,6 +139,8 @@ const DEFAULT_SOCIAL_LINKS = [
 ];
 
 export default function DashSettingsPage() {
+  useEffect(() => { document.title = 'Dashboard | Ajustes'; }, []);
+
   const [settings, setSettings] = useState({
     availability_status: 'available',
     availability_text_en: 'Available for new opportunities',
@@ -152,6 +154,7 @@ export default function DashSettingsPage() {
     about_text_en: '',
     about_text_es: '',
     tech_items: '',
+    github_token: '',
   });
   const [socialLinks, setSocialLinks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -186,8 +189,10 @@ export default function DashSettingsPage() {
     setSaving(true);
     setSuccess('');
     try {
+      // Exclude UI-only keys from settings payload
+      const { _showToken, ...cleanSettings } = settings;
       const res = await api.put('/admin/settings', {
-        ...settings,
+        ...cleanSettings,
         social_links: JSON.stringify(socialLinks),
       });
       if (res.data?.success) {
@@ -389,6 +394,42 @@ export default function DashSettingsPage() {
           <div className="dash-form-row">
             <FileUploadField label="Carta de presentación (ES)" icon={<FaUpload />} accept=".pdf" target="presentacion.pdf" endpoint="/admin/upload-document" />
             <FileUploadField label="Cover Letter (EN)" icon={<FaUpload />} accept=".pdf" target="presentation.pdf" endpoint="/admin/upload-document" />
+          </div>
+        </div>
+      </div>
+
+      {/* GitHub Token */}
+      <div className="dash-card">
+        <h3 className="dash-card-title"><FaKey className="me-2" /> Token de GitHub</h3>
+        <p style={{ color: 'var(--dash-text-muted)', fontSize: '0.8rem', marginBottom: '1rem' }}>
+          Personal Access Token (PAT) para el Provisioning Stack. Se guarda en la base de datos. Necesita permisos <code style={{ color: 'var(--dash-accent)' }}>repo</code>.
+        </p>
+        <div className="dash-form">
+          <div className="dash-form-group">
+            <label>GitHub PAT</label>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <input
+                className="dash-input"
+                type={settings._showToken ? 'text' : 'password'}
+                value={settings.github_token}
+                onChange={e => setSettings({ ...settings, github_token: e.target.value })}
+                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                style={{ flex: 1, fontFamily: 'var(--font-mono, monospace)', fontSize: '0.85rem' }}
+              />
+              <button
+                type="button"
+                className="dash-btn dash-btn-ghost"
+                onClick={() => setSettings(prev => ({ ...prev, _showToken: !prev._showToken }))}
+                title={settings._showToken ? 'Ocultar' : 'Mostrar'}
+              >
+                {settings._showToken ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+            {settings.github_token && (
+              <small style={{ color: 'var(--dash-text-dim)', marginTop: '0.25rem', display: 'block' }}>
+                El token se guardará al pulsar "Guardar ajustes".
+              </small>
+            )}
           </div>
         </div>
       </div>

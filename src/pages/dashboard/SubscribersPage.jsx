@@ -7,6 +7,8 @@ export default function DashSubscribersPage() {
   const [subscribers, setSubscribers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => { document.title = 'Dashboard | Suscriptores'; }, []);
+
   const load = () => {
     api.get('/admin/subscribers').then(r => { setSubscribers(r.data); setLoading(false); });
   };

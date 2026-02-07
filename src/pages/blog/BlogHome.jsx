@@ -18,6 +18,8 @@ export default function BlogHome() {
   const [pathIdx, setPathIdx] = useState(0);
   const intervalRef = useRef();
 
+  useEffect(() => { document.title = 'thisisrober - Blog'; }, []);
+
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setPathIdx(prev => (prev + 1) % HERO_PATHS.length);

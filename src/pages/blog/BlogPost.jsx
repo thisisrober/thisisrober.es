@@ -13,6 +13,8 @@ export default function BlogPost() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => { document.title = 'thisisrober - Blog'; }, []);
+
   const fmtViews = (n) => {
     if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, '') + 'k';
     return String(n);
