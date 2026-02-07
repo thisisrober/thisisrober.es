@@ -8,6 +8,7 @@
 4. [Dashboard Guide](./dashboard-guide.md) — Admin panel features, settings, content management
 5. [Database Schema](./database-schema.md) — Tables, columns, relationships, sql.js driver
 6. [Deployment](./deployment.md) — Build, production setup, environment variables
+7. [Provisioning Stack](./provisioning-stack.md) — GitHub integration, repo templates, deploy-to-portfolio workflow
 
 ## Quick Start
 

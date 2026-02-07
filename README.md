@@ -88,6 +88,7 @@ Commit message prefixes control version bumps:
 | [Dashboard Guide](docs/dashboard-guide.md) | Admin panel features and usage |
 | [Database Schema](docs/database-schema.md) | All 8 tables with column definitions |
 | [Deployment](docs/deployment.md) | AWS setup, Nginx, PM2, CI/CD pipeline |
+| [Provisioning Stack](docs/provisioning-stack.md) | GitHub integration, repo templates, deploy-to-portfolio |
 
 ## 📝 License
 
