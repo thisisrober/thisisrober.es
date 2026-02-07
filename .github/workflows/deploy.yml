@@ -1,0 +1,73 @@
+name: CI / Auto-Version
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Skip version-bump commits to avoid infinite loop
+      - name: Check skip
+        id: check
+        run: |
+          MSG=$(git log -1 --pretty=%B)
+          if echo "$MSG" | grep -q "\[skip ci\]"; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      # --- CI: validate build ---
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.skip == 'false'
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install & build
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          npm ci
+          npm run build
+
+      # --- Auto-version based on commit prefix ---
+      - name: Bump version
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          MSG=$(git log -1 --pretty=%B)
+          CURRENT=$(node -p "require('./package.json').version")
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+
+          BUMPED=false
+          if echo "$MSG" | grep -qiE "^release"; then
+            MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0; BUMPED=true
+          elif echo "$MSG" | grep -qiE "^feat:"; then
+            MINOR=$((MINOR + 1)); PATCH=0; BUMPED=true
+          elif echo "$MSG" | grep -qiE "^fix:"; then
+            PATCH=$((PATCH + 1)); BUMPED=true
+          fi
+
+          if [ "$BUMPED" = true ]; then
+            NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+            npm version $NEW_VERSION --no-git-tag-version
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add package.json package-lock.json
+            git commit -m "chore: v$NEW_VERSION [skip ci]"
+            git tag "v$NEW_VERSION"
+            git push
+            git push --tags
+            echo "📦 Bumped: $CURRENT → v$NEW_VERSION"
+          else
+            echo "📦 No version bump needed"
+          fi
