@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FaUser, FaLock, FaArrowRight } from 'react-icons/fa';
@@ -10,6 +10,8 @@ export default function DashLoginPage() {
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => { document.title = 'Dashboard | Login'; }, []);
 
   if (admin) return <Navigate to="/dashboard" replace />;
 

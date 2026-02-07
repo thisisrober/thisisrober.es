@@ -8,6 +8,8 @@ export default function DashPostsPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => { document.title = 'Dashboard | Posts'; }, []);
+
   const load = () => {
     api.get('/admin/posts').then(r => { setPosts(r.data); setLoading(false); });
   };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaCopy, FaCheck } from 'react-icons/fa';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 
@@ -31,6 +31,8 @@ const prompts = [
 
 export default function DashPromptsPage() {
   const [copied, setCopied] = useState(null);
+
+  useEffect(() => { document.title = 'Dashboard | Prompts IA'; }, []);
 
   const copyToClipboard = (text, idx) => {
     navigator.clipboard.writeText(text);

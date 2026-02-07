@@ -163,3 +163,19 @@ Language determined by `?lang=es|en` query param → stored in `language` cookie
 - `public/` is served statically by both Vite (dev) and Express (production).
 - `docs/` holds project documentation.
 - `server/database/thisisrober.db` is gitignored — regenerate with `npm run db:init`.
+
+## ⛔ Build & Deployment — DO NOT BUILD
+
+**NEVER run `npm run build`, `npx vite build`, or any build command.** The project uses a fully automated CI/CD pipeline:
+
+1. Developer pushes code to GitHub.
+2. GitHub Actions triggers automatically: runs version control (semantic versioning), builds the production assets, and deploys to **AWS**.
+3. The production server on AWS serves the built files.
+
+**What this means for you:**
+- **Do NOT** execute build commands (`npm run build`, `vite build`, etc.) under any circumstance.
+- **Do NOT** suggest or generate build commands in terminal instructions.
+- **Do NOT** create or modify CI/CD pipeline files unless explicitly asked.
+- Only use `npm run dev` for local development.
+- The `dist/` folder is gitignored and handled exclusively by the CI/CD pipeline.
+- If the user asks to "deploy" or "build", remind them that pushing to GitHub is the only required action.

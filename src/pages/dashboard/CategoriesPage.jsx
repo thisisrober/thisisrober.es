@@ -11,6 +11,8 @@ export default function DashCategoriesPage() {
   const [editForm, setEditForm] = useState({ name_es: '', name_en: '', description_es: '', description_en: '' });
   const [error, setError] = useState('');
 
+  useEffect(() => { document.title = 'Dashboard | Categorías'; }, []);
+
   const load = () => {
     api.get('/admin/categories').then(r => { setCategories(r.data); setLoading(false); });
   };

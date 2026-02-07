@@ -15,6 +15,8 @@ export default function DashExperiencePage() {
   const [form, setForm] = useState({ ...EMPTY });
   const [error, setError] = useState('');
 
+  useEffect(() => { document.title = 'Dashboard | Experiencia'; }, []);
+
   const load = () => {
     api.get('/admin/experience').then(r => { setItems(r.data); setLoading(false); });
   };

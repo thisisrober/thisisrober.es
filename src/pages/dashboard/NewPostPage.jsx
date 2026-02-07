@@ -16,6 +16,8 @@ export default function DashNewPostPage() {
   });
   const [image, setImage] = useState(null);
 
+  useEffect(() => { document.title = 'Dashboard | Nuevo Post'; }, []);
+
   useEffect(() => {
     api.get('/admin/categories').then(r => setCategories(r.data));
   }, []);

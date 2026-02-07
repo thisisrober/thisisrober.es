@@ -53,6 +53,8 @@ export default function OverviewPage() {
   const [data, setData] = useState(null);
   const [greeting] = useState(getGreeting);
 
+  useEffect(() => { document.title = 'Dashboard | Resumen'; }, []);
+
   useEffect(() => {
     api.get('/admin/dashboard').then(r => setData(r.data));
   }, []);

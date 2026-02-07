@@ -20,6 +20,8 @@ export default function DashEditPostPage() {
   const [image, setImage] = useState(null);
   const [currentImage, setCurrentImage] = useState('');
 
+  useEffect(() => { document.title = 'Dashboard | Editar Post'; }, []);
+
   useEffect(() => {
     Promise.all([
       api.get('/admin/categories'),

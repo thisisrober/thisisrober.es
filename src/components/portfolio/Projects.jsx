@@ -51,7 +51,15 @@ function ProjectCard({ project, lang, t }) {
     } catch { return '129, 140, 248'; }
   }, []);
 
-  const handleImageLoad = (e) => setShadowColor(getDominantColor(e.target));
+  const handleImageLoad = (e) => {
+    const color = getDominantColor(e.target);
+    setShadowColor(color);
+    // On mobile, apply shadow immediately (no hover available)
+    if (window.matchMedia('(max-width: 768px)').matches && cardRef.current) {
+      cardRef.current.style.boxShadow = `0 8px 32px rgba(${color}, 0.3), 0 0 60px rgba(${color}, 0.1)`;
+      cardRef.current.style.borderColor = `rgba(${color}, 0.5)`;
+    }
+  };
 
   const techs = project.technologies ? project.technologies.split(',').map(s => s.trim()).filter(Boolean) : [];
 
@@ -66,7 +74,7 @@ function ProjectCard({ project, lang, t }) {
         }
       }}
       onMouseLeave={() => {
-        if (cardRef.current) {
+        if (cardRef.current && !window.matchMedia('(max-width: 768px)').matches) {
           cardRef.current.style.boxShadow = '';
           cardRef.current.style.borderColor = '';
         }

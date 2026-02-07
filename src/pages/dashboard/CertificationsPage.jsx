@@ -15,6 +15,8 @@ export default function DashCertificationsPage() {
   const [form, setForm] = useState({ ...EMPTY });
   const [error, setError] = useState('');
 
+  useEffect(() => { document.title = 'Dashboard | Certificaciones'; }, []);
+
   const load = () => {
     api.get('/admin/certifications').then(r => { setItems(r.data); setLoading(false); });
   };
