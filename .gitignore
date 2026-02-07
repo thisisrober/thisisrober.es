@@ -11,6 +11,7 @@ projects/
 server/database/thisisrober.db
 server/database/thisisrober.db-shm
 server/database/thisisrober.db-wal
+server/database/seed.js
 
 # Uploaded files (runtime)
 public/uploads/*

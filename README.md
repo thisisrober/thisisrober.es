@@ -60,40 +60,6 @@ All user-facing content is bilingual (Spanish / English) — language is resolve
 └── docs/                        Full documentation
 ```
 
-## 🚀 Getting Started
-
-```bash
-# Clone the repository
-git clone https://github.com/thisisrober/thisisrober.es.git
-cd thisisrober.es
-
-# Install dependencies
-npm install
-
-# Create & seed the database (first time only)
-npm run db:init
-
-# Start development (Vite + Express concurrently)
-npm run dev
-```
-
-| URL | Service |
-|-----|---------|
-| `http://localhost:5173` | Frontend (Vite) |
-| `http://localhost:3001` | API (Express) |
-| `http://localhost:5173/dashboard` | Admin panel |
-
-## 📋 Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Vite + Express in parallel |
-| `npm run dev:client` | Vite dev server only |
-| `npm run dev:server` | Express API only (auto-restart) |
-| `npm run db:init` | Create / seed SQLite database |
-| `npm run db:backup` | Timestamp-based database backup |
-| `npm start` | Express production server |
-
 ## 🔄 CI/CD & Versioning
 
 Fully automated on push to `main` via **GitHub Actions**:
