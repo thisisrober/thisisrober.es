@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Standalone sub-projects (deploy separately, not through CI/CD)
+projects/
+
+# Database
+server/database/thisisrober.db
+server/database/thisisrober.db-shm
+server/database/thisisrober.db-wal
+
+# Uploaded files (runtime)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+*.tgz
+.cache/
+
+# FTP deploy state
+.ftp-deploy-sync-state.json
