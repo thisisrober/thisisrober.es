@@ -1,4 +1,4 @@
-name: CI / Auto-Version
+name: CI / Deploy
 
 on:
   push:
@@ -7,16 +7,21 @@ on:
 permissions:
   contents: write
 
+env:
+  SERVER_IP: ${{ secrets.SERVER_IP }}
+  SERVER_USER: ubuntu
+
 jobs:
-  ci:
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Skip version-bump commits to avoid infinite loop
       - name: Check skip
         id: check
         run: |
@@ -27,47 +32,71 @@ jobs:
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
-      # --- CI: validate build ---
       - uses: actions/setup-node@v4
         if: steps.check.outputs.skip == 'false'
         with:
           node-version: 20
           cache: npm
 
-      - name: Install & build
+      - name: Install dependencies
         if: steps.check.outputs.skip == 'false'
-        run: |
-          npm ci
-          npm run build
+        run: npm ci
 
-      # --- Auto-version based on commit prefix ---
-      - name: Bump version
+      - name: Build
         if: steps.check.outputs.skip == 'false'
+        run: npm run build
+
+      - name: Upload build artifact
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.skip == 'false'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Setup SSH
         run: |
-          MSG=$(git log -1 --pretty=%B)
-          CURRENT=$(node -p "require('./package.json').version")
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
 
-          BUMPED=false
-          if echo "$MSG" | grep -qiE "^release"; then
-            MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0; BUMPED=true
-          elif echo "$MSG" | grep -qiE "^feat:"; then
-            MINOR=$((MINOR + 1)); PATCH=0; BUMPED=true
-          elif echo "$MSG" | grep -qiE "^fix:"; then
-            PATCH=$((PATCH + 1)); BUMPED=true
-          fi
+      - name: Deploy to server
+        run: |
+          # Sync source files (excluding node_modules, db, uploads)
+          rsync -avz --delete \
+            --exclude 'node_modules' \
+            --exclude 'server/database/thisisrober.db*' \
+            --exclude 'public/uploads/*' \
+            --exclude '.git' \
+            --exclude '.github' \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./ $SERVER_USER@$SERVER_IP:/home/ubuntu/thisisrober/
 
-          if [ "$BUMPED" = true ]; then
-            NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-            npm version $NEW_VERSION --no-git-tag-version
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add package.json package-lock.json
-            git commit -m "chore: v$NEW_VERSION [skip ci]"
-            git tag "v$NEW_VERSION"
-            git push
-            git push --tags
-            echo "📦 Bumped: $CURRENT → v$NEW_VERSION"
-          else
-            echo "📦 No version bump needed"
-          fi
+      - name: Restart application
+        run: |
+          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+            cd /home/ubuntu/thisisrober
+            npm ci --production
+            pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs
+            pm2 save
+          EOF
+
+      - name: Health check
+        run: |
+          sleep 5
+          curl -f http://$SERVER_IP:3001/api/blog/posts || echo "Health check failed but deploy completed"
