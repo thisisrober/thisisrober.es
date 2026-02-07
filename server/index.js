@@ -47,7 +47,7 @@ app.use(session({
     maxAge: 24 * 60 * 60 * 1000, // Default 24h, extended to 30d if "remember me"
     httpOnly: true,
     sameSite: 'lax',
-    secure: isProd, // HTTPS only in production
+    secure: false, // Set to true after enabling HTTPS with certbot
   }
 }));
 
