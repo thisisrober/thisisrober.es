@@ -51,8 +51,9 @@ app.use(session({
   }
 }));
 
-// Serve uploaded files
+// Serve uploaded files (both /uploads and /blog/uploads for legacy content)
 app.use('/uploads', express.static(join(__dirname, '..', 'public', 'uploads')));
+app.use('/blog/uploads', express.static(join(__dirname, '..', 'public', 'uploads')));
 
 // Serve standalone sub-projects (static builds)
 app.use('/projects', express.static(join(__dirname, '..', 'projects')));
