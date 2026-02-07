@@ -90,6 +90,8 @@ jobs:
       - name: Restart application
         run: |
           ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+            export NVM_DIR="$HOME/.nvm"
+            source "$NVM_DIR/nvm.sh"
             cd /home/ubuntu/thisisrober
             npm ci --production
             pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs
