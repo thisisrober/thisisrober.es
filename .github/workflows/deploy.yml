@@ -136,9 +136,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Derive current version from latest git tag (source of truth)
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          # Fetch all tags explicitly (checkout may not include them)
+          git fetch --tags --force
+
+          # Get latest version tag sorted by version number
+          LATEST_TAG=$(git tag --list 'v*' --sort=-v:refname | head -n1)
+          if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG="v0.0.0"
+          fi
           CURRENT="${LATEST_TAG#v}"
+          echo "Latest tag found: $LATEST_TAG"
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
 
           case "${{ steps.bump.outputs.type }}" in
