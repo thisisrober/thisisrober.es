@@ -32,7 +32,7 @@
   min-height: 56px;
 }
 .nav-logo-img {
-  height: 22px;
+  height: 50px;
   width: auto;
   object-fit: contain;
   display: block;
@@ -673,6 +673,24 @@ a.contact-info-value:hover { color: var(--accent); }
 }
 .contact-form-box textarea {
   resize: none !important;
+}
+.contact-form-box .form-captcha {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.contact-form-box .form-captcha > div {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.contact-form-box .mt-4 {
+  display: flex;
+  justify-content: center;
+}
+.contact-form-box .btn-accent {
+  width: auto;
+  min-width: 200px;
 }
 
 /* ---------- Footer ---------- */

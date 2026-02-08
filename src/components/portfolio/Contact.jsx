@@ -14,6 +14,33 @@ export default function Contact() {
   const [siteSettings, setSiteSettings] = useState(null);
   const honeypotRef = useRef(null);
   const timestampRef = useRef(Date.now());
+  const recaptchaRef = useRef(null);
+  const recaptchaWidgetId = useRef(null);
+
+  // Render reCAPTCHA widget once the script is loaded
+  useEffect(() => {
+    const renderCaptcha = () => {
+      if (recaptchaRef.current && window.grecaptcha && window.grecaptcha.render && recaptchaWidgetId.current === null) {
+        recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
+          sitekey: '6LcPKWQsAAAAAJQE4aVNuKLSVhf1vsYqPBSu_psb',
+          theme: 'dark',
+        });
+      }
+    };
+    // If grecaptcha is already loaded
+    if (window.grecaptcha && window.grecaptcha.render) {
+      renderCaptcha();
+    } else {
+      // Wait for the script to load
+      const interval = setInterval(() => {
+        if (window.grecaptcha && window.grecaptcha.render) {
+          renderCaptcha();
+          clearInterval(interval);
+        }
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, []);
 
   useEffect(() => {
     api.get('/blog/settings/public').then(r => {
@@ -34,6 +61,13 @@ export default function Contact() {
     // Time check — reject if submitted in less than 2 seconds
     if (Date.now() - timestampRef.current < 2000) return;
 
+    // reCAPTCHA validation
+    const recaptchaToken = window.grecaptcha ? window.grecaptcha.getResponse(recaptchaWidgetId.current) : '';
+    if (!recaptchaToken) {
+      setResult({ success: false, message: t.form_captcha_error });
+      return;
+    }
+
     setSending(true);
     setResult(null);
     try {
@@ -41,11 +75,13 @@ export default function Contact() {
         ...form,
         lang,
         _ts: timestampRef.current,
+        recaptchaToken,
       });
       setResult(res.data);
       if (res.data.success) {
         setForm({ name: '', email: '', message: '' });
         timestampRef.current = Date.now();
+        if (window.grecaptcha) window.grecaptcha.reset(recaptchaWidgetId.current);
       }
     } catch {
       setResult({ success: false, message: t.form_error });
@@ -163,8 +199,11 @@ export default function Contact() {
                     required maxLength={5000}
                   />
                 </Form.Group>
+                <div className="form-captcha mt-3">
+                  <div ref={recaptchaRef} />
+                </div>
                 <div className="mt-4">
-                  <Button type="submit" className="btn-accent w-100" disabled={sending}>
+                  <Button type="submit" className="btn-accent d-inline-flex align-items-center justify-content-center gap-2" disabled={sending}>
                     <FaPaperPlane size={14} />
                     {sending ? t.form_sending : t.form_button}
                   </Button>

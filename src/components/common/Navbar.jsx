@@ -58,7 +58,7 @@ export default function Navbar() {
     { id: 'projects', label: t.nav_projects },
     { id: 'experience', label: t.nav_experience },
     { id: 'about', label: t.nav_about },
-    { id: 'contact', label: t.nav_contact || 'Get in Touch' },
+    { id: 'contact', label: t.nav_contact || 'Get in touch' },
   ];
 
   return (

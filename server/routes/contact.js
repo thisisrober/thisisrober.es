@@ -29,13 +29,28 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) && email.length <= 200;
 }
 
+// Verify reCAPTCHA token with Google
+async function verifyRecaptcha(token) {
+  try {
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=6LcPKWQsAAAAAIEOsxpZRsJeAMh5HINhMVD3sZPl&response=${encodeURIComponent(token)}`,
+    });
+    const data = await response.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
+
 // POST /api/contact
-router.post('/', (req, res) => {
-  const { name, email, message, lang = 'en', website, _ts } = req.body;
+router.post('/', async (req, res) => {
+  const { name, email, message, lang = 'en', website, _ts, recaptchaToken } = req.body;
 
   const messages = {
-    en: { success: 'Message sent successfully!', error: 'Error sending message. Please try again.', validation: 'Please fill all fields.', rate: 'Too many requests. Please wait a moment.', bot: 'Request rejected.' },
-    es: { success: '¡Mensaje enviado correctamente!', error: 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.', validation: 'Por favor completa todos los campos.', rate: 'Demasiadas solicitudes. Espera un momento.', bot: 'Solicitud rechazada.' },
+    en: { success: 'Message sent successfully!', error: 'Error sending message. Please try again.', validation: 'Please fill all fields.', rate: 'Too many requests. Please wait a moment.', bot: 'Request rejected.', captcha: 'Please complete the captcha.' },
+    es: { success: '¡Mensaje enviado correctamente!', error: 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.', validation: 'Por favor completa todos los campos.', rate: 'Demasiadas solicitudes. Espera un momento.', bot: 'Solicitud rechazada.', captcha: 'Por favor, completa el captcha.' },
   };
   const t = messages[lang] || messages.en;
 
@@ -47,6 +62,11 @@ router.post('/', (req, res) => {
   // Timestamp check — form submitted too fast (< 2s = bot)
   if (_ts && Date.now() - Number(_ts) < 2000) {
     return res.json({ success: false, message: t.bot });
+  }
+
+  // Verify reCAPTCHA
+  if (!recaptchaToken || !(await verifyRecaptcha(recaptchaToken))) {
+    return res.json({ success: false, message: t.captcha });
   }
 
   // Rate limit by IP

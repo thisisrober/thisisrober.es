@@ -46,6 +46,7 @@ const es = {
   form_sending: 'Enviando...',
   form_success: '¡Mensaje enviado correctamente!',
   form_error: 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.',
+  form_captcha_error: 'Por favor, completa el captcha antes de enviar.',
 
   // Newsletter
   newsletter_title: 'Suscríbete a la newsletter',
