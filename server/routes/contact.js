@@ -35,7 +35,7 @@ async function verifyRecaptcha(token) {
     const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=6LcPKWQsAAAAAIEOsxpZRsJeAMh5HINhMVD3sZPl&response=${encodeURIComponent(token)}`,
+      body: `secret=6LeTK2QsAAAAAI2oyyjbGCH_ENuQPORMVVKVolXD&response=${encodeURIComponent(token)}`,
     });
     const data = await response.json();
     return data.success === true;

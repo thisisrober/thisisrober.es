@@ -22,7 +22,7 @@ export default function Contact() {
     const renderCaptcha = () => {
       if (recaptchaRef.current && window.grecaptcha && window.grecaptcha.render && recaptchaWidgetId.current === null) {
         recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
-          sitekey: '6LcPKWQsAAAAAJQE4aVNuKLSVhf1vsYqPBSu_psb',
+          sitekey: '6LeTK2QsAAAAAJliMrKL655o5t4HQNeC1S0aEXBK',
           theme: 'dark',
         });
       }
