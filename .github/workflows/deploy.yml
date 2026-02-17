@@ -77,13 +77,16 @@ jobs:
 
       - name: Deploy to server
         run: |
-          # Sync source files (excluding node_modules, db, uploads)
+          # Sync source files (excluding node_modules, db, uploads, and the projects folder)
+          # We exclude the `projects` folder so content uploaded directly on the server persists
           rsync -avz --delete \
             --exclude 'node_modules' \
             --exclude 'server/database/thisisrober.db*' \
             --exclude 'public/uploads/*' \
             --exclude '.git' \
             --exclude '.github' \
+            --exclude 'projects' \
+            --exclude 'projects/**' \
             -e "ssh -o StrictHostKeyChecking=no" \
             ./ $SERVER_USER@$SERVER_IP:/home/ubuntu/thisisrober/
 
