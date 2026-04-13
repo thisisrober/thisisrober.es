@@ -72,7 +72,11 @@ export default function Navbar() {
     >
       <Container>
         <BsNavbar.Brand href="#" onClick={scrollTo('home')}>
-          <img src="/img/logo.png" alt="thisisrober" className="nav-logo-img" />
+          <img
+            src={dark ? '/img/logo-header-white.png' : '/img/logo-header-black.png'}
+            alt="thisisrober"
+            className="nav-logo-img"
+          />
         </BsNavbar.Brand>
         <BsNavbar.Toggle aria-controls="main-nav" />
         <BsNavbar.Collapse id="main-nav">
@@ -89,7 +93,7 @@ export default function Navbar() {
             <BsNav.Link href="/blog" onClick={() => setExpanded(false)}>{t.nav_blog}</BsNav.Link>
           </BsNav>
           <div className="nav-controls-pill">
-            <button className="nav-pill-btn" onClick={toggleTheme} aria-label="Toggle theme">
+            <button className="nav-pill-btn" onClick={(e) => toggleTheme(e)} aria-label="Toggle theme">
               {dark ? <FaSun size={13} /> : <FaMoon size={13} />}
             </button>
             <span className="nav-pill-sep" />

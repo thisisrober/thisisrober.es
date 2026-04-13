@@ -16,7 +16,7 @@ export default function BlogHeader() {
       </div>
 
       <div className="blog-header-pill blog-header-controls">
-        <button className="blog-header-btn" onClick={toggleTheme} aria-label="Toggle theme">
+        <button className="blog-header-btn" onClick={(e) => toggleTheme(e)} aria-label="Toggle theme">
           {dark ? <FaSun size={13} /> : <FaMoon size={13} />}
         </button>
         <span className="blog-header-sep" />

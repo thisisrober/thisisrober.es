@@ -44,3 +44,7 @@ npm-debug.log*
 
 # FTP deploy state
 .ftp-deploy-sync-state.json
+
+# Copilot skills
+.agents/
+.kiro/

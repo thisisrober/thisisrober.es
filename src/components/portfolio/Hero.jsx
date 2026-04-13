@@ -1,20 +1,24 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useSocialLinks, getSocialIcon } from '../../hooks/useSocialLinks';
 import api from '../../services/api';
+import HeroChat, { ChatTrigger } from './HeroChat';
 
 export default function Hero() {
   const { t, lang } = useTranslation();
   const socialLinks = useSocialLinks();
   const [typedText, setTypedText] = useState('');
   const [siteSettings, setSiteSettings] = useState(null);
+  const [chatOpen, setChatOpen] = useState(false);
   const textIndex = useRef(0);
   const charIndex = useRef(0);
   const isDeleting = useRef(false);
   const timerRef = useRef(null);
   const heroRef = useRef(null);
-  const nameRef = useRef(null);
+
+  const isMobile = useCallback(() => window.innerWidth <= 768, []);
 
   useEffect(() => {
     api.get('/blog/settings/public').then(r => {
@@ -70,57 +74,60 @@ export default function Hero() {
     };
   }, [t.animated_texts, lang]);
 
-  // Stranger Things scroll-driven zoom effect
+  // Block body scroll on mobile when chat is open
   useEffect(() => {
-    const handleScroll = () => {
-      if (!heroRef.current || !nameRef.current) return;
-      const rect = heroRef.current.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(1, -rect.top / (rect.height * 0.5)));
-      const scale = 1 + progress * 4;
-      const nameOpacity = Math.max(0, 1 - progress * 1.5);
-      const restOpacity = Math.max(0, 1 - progress * 2.5);
-      nameRef.current.style.transform = `scale(${scale})`;
-      nameRef.current.style.opacity = nameOpacity;
-      // Fade out all other hero elements
-      const content = heroRef.current.querySelector('.hero-content');
-      if (content) {
-        content.querySelectorAll('.hero-label, .hero-typed, .hero-socials').forEach(el => {
-          el.style.opacity = restOpacity;
-        });
-      }
+    if (chatOpen && isMobile()) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = '';
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [chatOpen, isMobile]);
+
+  const handleCloseChat = () => setChatOpen(false);
+
+  const chatPanel = chatOpen ? <HeroChat onClose={handleCloseChat} /> : null;
 
   return (
     <section id="home" className="hero-section" ref={heroRef}>
-      <div className="hero-content text-center">
-        <p className="hero-label">&gt; {heroGreeting}</p>
-        <h1 className="hero-name" ref={nameRef}>{heroName}</h1>
-        <p className="hero-typed">
-          <span className="typed-text">{typedText}</span>
-          <span className="typed-cursor">|</span>
-        </p>
-        <div className="hero-socials justify-content-center">
-          {socialLinks.length > 0 ? socialLinks.map((link, i) => {
-            const Icon = getSocialIcon(link.platform);
-            const href = link.platform === 'email' ? `mailto:${link.url}` : link.url;
-            const isExternal = link.platform !== 'email';
-            return (
-              <a key={i} href={href} {...(isExternal ? { target: '_blank', rel: 'noreferrer' } : {})} className="social-link" title={link.platform}>
-                <Icon size={18} />
-              </a>
-            );
-          }) : (
-            <>
-              <a href="https://github.com/thisisrober" target="_blank" rel="noreferrer" className="social-link" title="GitHub"><FaGithub size={18} /></a>
-              <a href="https://linkedin.com/in/thisisrober" target="_blank" rel="noreferrer" className="social-link" title="LinkedIn"><FaLinkedin size={18} /></a>
-              <a href="mailto:contacto@thisisrober.es" className="social-link" title="Email"><FaEnvelope size={18} /></a>
-            </>
-          )}
+      <div className="hero-content">
+        <div className="hero-main">
+          <p className="hero-label">&gt; {heroGreeting}</p>
+          <h1 className="hero-name">{heroName}</h1>
+          <p className="hero-typed">
+            <span className="typed-text">{typedText}</span>
+            <span className="typed-cursor">|</span>
+          </p>
+          <div className="hero-socials">
+            {socialLinks.length > 0 ? socialLinks.map((link, i) => {
+              const Icon = getSocialIcon(link.platform);
+              const href = link.platform === 'email' ? `mailto:${link.url}` : link.url;
+              const isExternal = link.platform !== 'email';
+              return (
+                <a key={i} href={href} {...(isExternal ? { target: '_blank', rel: 'noreferrer' } : {})} className="social-link" title={link.platform}>
+                  <Icon size={18} />
+                </a>
+              );
+            }) : (
+              <>
+                <a href="https://github.com/thisisrober" target="_blank" rel="noreferrer" className="social-link" title="GitHub"><FaGithub size={18} /></a>
+                <a href="https://linkedin.com/in/thisisrober" target="_blank" rel="noreferrer" className="social-link" title="LinkedIn"><FaLinkedin size={18} /></a>
+                <a href="mailto:contacto@thisisrober.es" className="social-link" title="Email"><FaEnvelope size={18} /></a>
+              </>
+            )}
+          </div>
+          <ChatTrigger onClick={() => setChatOpen(true)} lang={lang} />
         </div>
+        {chatOpen && !isMobile() && (
+          <div className="hero-chat-wrapper">
+            {chatPanel}
+          </div>
+        )}
       </div>
+      {chatOpen && isMobile() && createPortal(
+        <div className="hero-chat-overlay">{chatPanel}</div>,
+        document.body
+      )}
     </section>
   );
 }

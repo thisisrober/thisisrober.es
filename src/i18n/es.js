@@ -7,7 +7,7 @@ const es = {
 
   // Hero
   hero_greeting: 'Hola, soy thisisrober.',
-  animated_texts: ['Desarrollador.', 'Administrador de Sistemas.', 'Ciberseguridad.'],
+  animated_texts: ['Desarrollador Full-Stack.', 'Administrador de Sistemas.', 'Ciberseguridad.', 'Cloud & DevOps.', 'Desarrollador de Software.', 'Análisis de Datos.', 'Desarrollador Web.'],
 
   // About
   about_p1: `Full-stack developer en BASF, con experiencia previa en sistemas y redes.\n\nActualmente desarrollo aplicaciones web, enfocado en crear soluciones técnicas eficientes y escalables.\n\nMi interés está en el desarrollo full-stack con una visión data-driven: código que no solo funcione bien, sino que también aproveche los datos para tomar mejores decisiones. Formándome en análisis de datos para reforzar esta perspectiva.`,

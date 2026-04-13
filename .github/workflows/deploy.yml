@@ -90,6 +90,18 @@ jobs:
             -e "ssh -o StrictHostKeyChecking=no" \
             ./ $SERVER_USER@$SERVER_IP:/home/ubuntu/thisisrober/
 
+      - name: Inject secrets into .env
+        run: |
+          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'SCRIPT'
+            cd /home/ubuntu/thisisrober
+            # Add or update HF_TOKEN in .env
+            if grep -q '^HF_TOKEN=' .env 2>/dev/null; then
+              sed -i "s|^HF_TOKEN=.*|HF_TOKEN=${{ secrets.HF_TOKEN }}|" .env
+            else
+              echo "HF_TOKEN=${{ secrets.HF_TOKEN }}" >> .env
+            fi
+          SCRIPT
+
       - name: Restart application
         run: |
           ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'

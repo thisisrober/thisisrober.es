@@ -21,7 +21,7 @@ export default function BlogNav() {
             <BsNav.Link as={Link} to="/blog">{t.nav_blog}</BsNav.Link>
           </BsNav>
           <div className="nav-controls">
-            <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+            <button className="theme-toggle" onClick={(e) => toggleTheme(e)} aria-label="Toggle theme">
               {dark ? <FaSun size={14} /> : <FaMoon size={14} />}
             </button>
             <div className="lang-switcher">
