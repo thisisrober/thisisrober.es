@@ -63,6 +63,13 @@ function ProjectCard({ project, lang, t }) {
 
   const techs = project.technologies ? project.technologies.split(',').map(s => s.trim()).filter(Boolean) : [];
 
+  const imageSrc = (() => {
+    const pi = project.preview_image || '';
+    if (!pi) return '';
+    if (/^https?:\/\//.test(pi) || pi.startsWith('/')) return pi;
+    return `/uploads/${pi}`;
+  })();
+
   return (
     <div
       ref={cardRef}
@@ -80,13 +87,19 @@ function ProjectCard({ project, lang, t }) {
         }
       }}
     >
-      <img
-        src={project.preview_image}
-        alt={lang === 'es' ? project.name_es : project.name_en}
-        className="project-image"
-        crossOrigin="anonymous"
-        onLoad={handleImageLoad}
-      />
+      {imageSrc ? (
+        <img
+          src={imageSrc}
+          alt={lang === 'es' ? project.name_es : project.name_en}
+          className="project-image"
+          crossOrigin="anonymous"
+          onLoad={handleImageLoad}
+        />
+      ) : (
+        <div className="project-image project-card-placeholder">
+          <span>{t.blog_no_image}</span>
+        </div>
+      )}
       <div className="project-content">
         <div className="d-flex justify-content-between align-items-start mb-2">
           <h3 className="project-title">{lang === 'es' ? project.name_es : project.name_en}</h3>
