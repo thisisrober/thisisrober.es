@@ -72,6 +72,13 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/admin/provisioning', provisioningRoutes);
 app.use('/api/ai', aiRoutes);
 
+// JSON error handler for API routes (catches multer errors, etc.)
+app.use('/api', (err, req, res, next) => {
+  console.error('API Error:', err.message || err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({ success: false, error: err.message || 'Internal server error' });
+});
+
 // In production, serve Vite build
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(join(__dirname, '..', 'dist')));
