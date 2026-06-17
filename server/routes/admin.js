@@ -34,8 +34,8 @@ const upload = multer({
 const publicDir = path.join(__dirname, '..', '..', 'public');
 const siteAssetStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Determine target dir based on the `target` field
-    const target = req.body.target || '';
+    // Determine target dir based on the `target` query param
+    const target = req.query.target || '';
     let dest = publicDir;
     if (target.startsWith('img/')) {
       dest = path.join(publicDir, 'img');
@@ -44,7 +44,7 @@ const siteAssetStorage = multer.diskStorage({
     cb(null, dest);
   },
   filename: (req, file, cb) => {
-    const target = req.body.target || '';
+    const target = req.query.target || '';
     // Use the target filename if specified (e.g. "img/logo.png" → "logo.png")
     const basename = target.includes('/') ? target.split('/').pop() : file.originalname;
     cb(null, basename);
@@ -469,8 +469,22 @@ router.post('/upload-image', requireAuth, upload.single('image'), (req, res) => 
 // =============================================
 
 router.post('/upload-site-asset', requireAuth, siteAssetUpload.single('file'), (req, res) => {
-  if (!req.file) return res.status(400).json({ success: false, error: 'No file uploaded' });
-  const target = req.body.target || '';
+  if (!req.file) {
+    console.error('[upload-site-asset] No file uploaded');
+    return res.status(400).json({ success: false, error: 'No file uploaded' });
+  }
+  const target = req.query.target || '';
+  console.log('[upload-site-asset] File uploaded:', {
+    fieldname: req.file.fieldname,
+    originalname: req.file.originalname,
+    encoding: req.file.encoding,
+    mimetype: req.file.mimetype,
+    size: req.file.size,
+    destination: req.file.destination,
+    filename: req.file.filename,
+    path: req.file.path,
+    target: target,
+  });
   // Return the public path
   let publicPath;
   if (target.startsWith('img/')) {
@@ -478,6 +492,7 @@ router.post('/upload-site-asset', requireAuth, siteAssetUpload.single('file'), (
   } else {
     publicPath = `/${req.file.filename}`;
   }
+  console.log('[upload-site-asset] Response:', { success: true, path: publicPath, filename: req.file.filename });
   res.json({ success: true, path: publicPath, filename: req.file.filename });
 });
 
@@ -485,7 +500,7 @@ router.post('/upload-site-asset', requireAuth, siteAssetUpload.single('file'), (
 const rootAssetStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, publicDir),
   filename: (req, file, cb) => {
-    const target = req.body.target || file.originalname;
+    const target = req.query.target || file.originalname;
     cb(null, target);
   },
 });

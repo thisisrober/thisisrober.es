@@ -61,7 +61,8 @@ app.use('/blog/uploads', express.static(join(__dirname, '..', 'public', 'uploads
 app.use('/projects', express.static(join(__dirname, '..', 'projects')));
 
 // Serve public static files (images, PDFs, etc.)
-app.use('/img', express.static(join(__dirname, '..', 'public', 'img')));
+// In development disable caching to ensure updated assets (profile image) appear immediately.
+app.use('/img', express.static(join(__dirname, '..', 'public', 'img'), { maxAge: isProd ? '7d' : 0 }));
 app.use(express.static(join(__dirname, '..', 'public'), { extensions: ['pdf'] }));
 
 // API routes

@@ -1,18 +1,36 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Dropdown } from 'react-bootstrap';
-import { FaFileAlt, FaEnvelopeOpen } from 'react-icons/fa';
+import { Container, Row, Col } from 'react-bootstrap';
 import { useTranslation } from '../../hooks/useTranslation';
 import api from '../../services/api';
 
 export default function About() {
   const { t, lang } = useTranslation();
   const [siteSettings, setSiteSettings] = useState(null);
+  const [imageSrc, setImageSrc] = useState('/img/profile-picture.png');
 
   useEffect(() => {
     api.get('/blog/settings/public').then(r => {
       if (r.data && typeof r.data === 'object') setSiteSettings(r.data);
     }).catch(() => {});
   }, []);
+
+  // Force reload profile image when it changes by using a cache-busting query param
+  useEffect(() => {
+    let cancelled = false;
+    const updateImage = async () => {
+      try {
+        const res = await fetch('/img/profile-picture.png', { method: 'HEAD', cache: 'no-store' });
+        if (cancelled) return;
+        const lm = res.headers.get('last-modified');
+        const v = lm ? new Date(lm).getTime() : Date.now();
+        setImageSrc(`/img/profile-picture.png?v=${v}`);
+      } catch (err) {
+        // ignore — keep default
+      }
+    };
+    updateImage();
+    return () => { cancelled = true; };
+  }, [siteSettings]);
 
   const aboutText = siteSettings?.[`about_text_${lang}`] || t.about_p1;
 
@@ -21,7 +39,7 @@ export default function About() {
       <Container>
         <Row className="align-items-center g-5">
           <Col lg={5} className="text-center order-lg-2 reveal-right">
-            <img src="/img/profile-picture.png" alt="Robert Lita" className="about-image img-fluid" />
+            <img src={imageSrc} alt="Robert Lita" className="about-image img-fluid" />
           </Col>
           <Col lg={7} className="order-lg-1 reveal-left">
             <p className="section-label">{t.nav_about}</p>
@@ -29,22 +47,6 @@ export default function About() {
               {aboutText.split('\n\n').map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
-            </div>
-            <div className="about-cta">
-              <Dropdown>
-                <Dropdown.Toggle className="btn-accent"><FaFileAlt size={14} className="me-1" /> {t.about_cta_cv}</Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item href="/cv-es.pdf" target="_blank">Español</Dropdown.Item>
-                  <Dropdown.Item href="/cv-eng.pdf" target="_blank">English</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-              <Dropdown>
-                <Dropdown.Toggle className="btn-ghost"><FaEnvelopeOpen size={14} className="me-1" /> {t.about_cta_cover}</Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item href="/presentacion.pdf" target="_blank">Español</Dropdown.Item>
-                  <Dropdown.Item href="/presentation.pdf" target="_blank">English</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
             </div>
           </Col>
         </Row>

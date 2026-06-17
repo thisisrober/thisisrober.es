@@ -10,9 +10,7 @@ const es = {
   animated_texts: ['Desarrollador Full-Stack.', 'Cloud y DevOps.', 'IA y automatización.', 'Administrador de sistemas.', 'Ciberseguridad.', 'Desarrollador de software.', 'Análisis de datos.', 'Desarrollador web.'],
 
   // About
-  about_p1: `N/A`,
-  about_cta_cv: 'Descargar CV',
-  about_cta_cover: 'Carta de presentación',
+  about_p1: `Soy Robert Lita, desarrollador full‑stack especializado en Cloud, DevOps, automatización e IA. Me apasiona diseñar y construir soluciones web e infraestructuras robustas, optimizar procesos y aprender tecnologías nuevas. Actualmente trabajo en proyectos personales y colaborativos que combinan desarrollo y operaciones.`,
 
   // Tech
   tech_title: 'Tecnologías que uso',

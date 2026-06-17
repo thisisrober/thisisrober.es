@@ -10,9 +10,7 @@ const en = {
   animated_texts: ['Full-Stack Developer.', 'Cloud & DevOps.', 'AI & Automation.', 'Systems Administrator.', 'Cybersecurity.', 'Software Developer.', 'Data Analytics.', 'Web Developer.'],
 
   // About
-  about_p1: `N/A`,
-  about_cta_cv: 'Download CV',
-  about_cta_cover: 'Cover letter',
+  about_p1: `I'm Robert Lita, a full‑stack developer specializing in Cloud, DevOps, automation, and AI. I enjoy designing and building web applications and reliable infrastructure, improving processes, and learning new technologies. I work on personal and collaborative projects that blend development and operations.`,
 
   // Tech
   tech_title: 'Technologies I use',

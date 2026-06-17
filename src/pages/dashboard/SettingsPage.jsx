@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { FaSave, FaGlobe, FaEnvelope, FaMapMarkerAlt, FaImage, FaFilePdf, FaUpload, FaLink, FaPlus, FaTrash, FaChevronDown, FaUser, FaCode, FaInfoCircle, FaKey, FaCheck, FaEyeSlash, FaEye } from 'react-icons/fa';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import api from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const STATUS_OPTIONS = [
   { value: 'available', label: 'Disponible', color: '#22c55e' },
@@ -59,16 +60,28 @@ function FileUploadField({ label, icon, accept, target, endpoint = '/admin/uploa
     setMsg('');
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('target', target);
+    // Pass target as query param since multer intercepts FormData before req.body is parsed
+    const urlWithTarget = `${endpoint}?target=${encodeURIComponent(target)}`;
     try {
-      const res = await api.post(endpoint, formData, true);
-      if (res.data.success) {
+      const res = await api.post(urlWithTarget, formData, true);
+      if (res.status === 401) {
+        setMsg('No autenticado. Inicie sesión.');
+        window.location.href = '/dashboard/login';
+        return;
+      }
+      if (res.data && res.data.success) {
         setMsg(`Subido: ${res.data.filename}`);
         if (file.type.startsWith('image/')) {
           setPreviewUrl(URL.createObjectURL(file));
         }
+      } else if (res.data && res.data.error) {
+        setMsg('Error al subir: ' + res.data.error);
       } else setMsg('Error al subir');
-    } catch { setMsg('Error de subida'); }
+    } catch (err) {
+      setMsg('Error de subida');
+      // eslint-disable-next-line no-console
+      console.error('Upload error', err);
+    }
     setUploading(false);
     if (inputRef.current) inputRef.current.value = '';
   };
@@ -139,6 +152,7 @@ const DEFAULT_SOCIAL_LINKS = [
 ];
 
 export default function DashSettingsPage() {
+  const navigate = useNavigate();
   useEffect(() => { document.title = 'Dashboard | Ajustes'; }, []);
 
   const [settings, setSettings] = useState({
@@ -163,6 +177,10 @@ export default function DashSettingsPage() {
 
   useEffect(() => {
     api.get('/admin/settings').then(r => {
+      if (r.status === 401) {
+        navigate('/dashboard/login');
+        return;
+      }
       if (r.data && typeof r.data === 'object') {
         const { site_title, maintenance_mode, social_links, ...rest } = r.data;
         setSettings(prev => {
@@ -377,7 +395,7 @@ export default function DashSettingsPage() {
       <div className="dash-card">
         <h3 className="dash-card-title"><FaImage className="me-2" /> Imágenes del sitio</h3>
         <div className="dash-form">
-          <FileUploadField label="Logo del navbar" icon={<FaImage />} accept="image/*" target="img/logo.png" previewPath="/img/logo.png" />
+          <FileUploadField label="Icono de la página" icon={<FaImage />} accept="image/*" target="img/logo.png" previewPath="/img/logo.png" />
           <FileUploadField label="Foto de perfil / About" icon={<FaImage />} accept="image/*" target="img/profile-picture.png" previewPath="/img/profile-picture.png" />
           <FileUploadField label="Imagen del blog (header)" icon={<FaImage />} accept="image/*" target="img/blog-header.png" previewPath="/img/blog-header.png" />
         </div>
