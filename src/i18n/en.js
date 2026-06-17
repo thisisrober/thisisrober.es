@@ -7,10 +7,10 @@ const en = {
 
   // Hero
   hero_greeting: 'Hello, I am thisisrober.',
-  animated_texts: ['Full-Stack Developer.', 'Systems Administrator.', 'Cybersecurity.', 'Cloud & DevOps.', 'Software Developer.', 'Data Analytics.', 'Web Developer.'],
+  animated_texts: ['Full-Stack Developer.', 'Cloud & DevOps.', 'AI & Automation.', 'Systems Administrator.', 'Cybersecurity.', 'Software Developer.', 'Data Analytics.', 'Web Developer.'],
 
   // About
-  about_p1: `Full-stack developer at BASF, with previous experience in systems and networks.\n\nI currently develop web applications, focusing on creating efficient and scalable technical solutions.\n\nMy interest lies in full-stack development with a data-driven approach: code that not only works well but also leverages data to make better decisions. I am currently training in data analytics to strengthen this perspective.`,
+  about_p1: `N/A`,
   about_cta_cv: 'Download CV',
   about_cta_cover: 'Cover letter',
 

@@ -17,7 +17,6 @@ const SUGGESTIONS_ES = [
 export function ChatTrigger({ onClick, lang }) {
   return (
     <div className="hero-chat-trigger-wrapper">
-      <span className="hero-chat-new-badge">NEW</span>
       <button className="hero-chat-trigger" onClick={onClick}>
         <FiMessageSquare size={16} />
         <span>{lang === 'es' ? 'Pregúntale a NOVA sobre mí' : 'Ask NOVA about me'}</span>
